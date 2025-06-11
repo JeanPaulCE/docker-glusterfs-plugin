@@ -2,7 +2,6 @@ package driver
 
 import (
 	"testing"
-
 	"github.com/docker/go-plugins-helpers/volume"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

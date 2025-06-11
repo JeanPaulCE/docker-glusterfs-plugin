@@ -5,10 +5,9 @@ import (
 	"log"
 	"os"
 	"strings"
-
-	"github.com/docker/go-plugins-helpers/volume"
-	"github.com/marcelo-ochoa/docker-volume-plugins/glusterfs-plugin/internal/errors"
-	"github.com/marcelo-ochoa/docker-volume-plugins/glusterfs-plugin/pkg/types"
+	"glusterfs-plugin/internal/errors"
+	"glusterfs-plugin/pkg/types"
+	"glusterfs-plugin/pkg/volume"
 )
 
 // GFSDriver implements the Driver interface for GlusterFS volumes
