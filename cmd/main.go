@@ -1,46 +1,33 @@
 package main
 
 import (
+	"flag"
 	"log"
-	"os"
 	"strings"
 
-	"github.com/marcelo-ochoa/docker-volume-plugins/glusterfs-plugin/internal/driver"
-	"github.com/marcelo-ochoa/docker-volume-plugins/glusterfs-plugin/internal/utils"
+	"glusterfs-plugin/internal/driver"
+	"glusterfs-plugin/internal/utils"
+)
+
+var (
+	servers = flag.String("servers", "", "Comma separated list of GlusterFS servers")
+	root    = flag.String("root", "/mnt/glusterfs", "Mount root of volume plugin")
 )
 
 func main() {
-	// Initialize logging
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.Printf("starting glusterfs volume plugin")
+	flag.Parse()
 
-	// Start syslog
-	if err := utils.StartSyslog(); err != nil {
-		log.Fatalf("failed to initialize syslog: %v", err)
+	if *servers == "" {
+		log.Fatal("servers parameter is required")
 	}
 
-	// Build and initialize driver
-	var servers []string
-	if os.Getenv("SERVERS") != "" {
-		servers = strings.Split(os.Getenv("SERVERS"), ",")
+	serversList := strings.Split(*servers, ",")
+	for i, server := range serversList {
+		serversList[i] = strings.TrimSpace(server)
 	}
 
-	d := driver.NewDriver(servers)
-
-	if os.Getenv("SECURE_MANAGEMENT") != "" {
-		file, err := os.Create("/var/lib/glusterd/secure-access")
-		if err != nil {
-			log.Fatalf("failed to create secure-access file: %v", err)
-		}
-		defer file.Close()
-	}
-
-	d.Init(d)
-	defer d.Close()
-
-	// Start serving
-	log.Printf("glusterfs volume plugin is ready to serve")
-	if err := d.ServeUnix(); err != nil {
-		log.Fatalf("failed to serve unix socket: %v", err)
+	d := driver.NewDriver(serversList)
+	if err := utils.StartUnixSocket(d, *root); err != nil {
+		log.Fatal(err)
 	}
 } 

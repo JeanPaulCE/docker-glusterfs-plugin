@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestStartSyslog(t *testing.T) {
@@ -14,24 +13,6 @@ func TestStartSyslog(t *testing.T) {
 		t.Skip("rsyslogd not found, skipping test")
 	}
 
-	tests := []struct {
-		name    string
-		wantErr bool
-	}{
-		{
-			name:    "start syslog",
-			wantErr: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := StartSyslog()
-			if tt.wantErr {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-			}
-		})
-	}
+	err := StartSyslog()
+	assert.NoError(t, err)
 } 

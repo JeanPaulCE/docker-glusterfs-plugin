@@ -1,10 +1,14 @@
 package driver
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
-	"github.com/docker/go-plugins-helpers/volume"
+
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+
+	"glusterfs-plugin/pkg/types"
+	"glusterfs-plugin/pkg/volume"
 )
 
 func TestNewDriver(t *testing.T) {
@@ -33,7 +37,7 @@ func TestNewDriver(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := NewDriver(tt.servers)
-			assert.Equal(t, tt.want.servers, got.servers)
+			assert.Equal(t, tt.want.Servers, got.Servers)
 		})
 	}
 }
@@ -161,6 +165,13 @@ func TestMountOptions(t *testing.T) {
 }
 
 func TestPreMount(t *testing.T) {
+	// Crear un directorio temporal para las pruebas
+	tmpDir, err := os.MkdirTemp("", "glusterfs-test-*")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tmpDir)
+
 	tests := []struct {
 		name    string
 		driver  *GFSDriver
@@ -178,7 +189,7 @@ func TestPreMount(t *testing.T) {
 			driver: NewDriver([]string{}),
 			req: &volume.MountRequest{
 				Name:       "test",
-				Mountpoint: "/tmp/test",
+				Mountpoint: filepath.Join(tmpDir, "test"),
 			},
 			wantErr: false,
 		},
@@ -186,6 +197,13 @@ func TestPreMount(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Crear el directorio de montaje si no existe
+			if tt.req != nil {
+				if err := os.MkdirAll(tt.req.Mountpoint, 0755); err != nil {
+					t.Fatalf("Failed to create mount point: %v", err)
+				}
+			}
+
 			err := tt.driver.PreMount(tt.req)
 			if tt.wantErr {
 				assert.Error(t, err)
