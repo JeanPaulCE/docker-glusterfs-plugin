@@ -78,3 +78,17 @@ docker plugin set glusterfs SECURE_MANAGEMENT=yes
 1. Los servidores GlusterFS deben estar definidos en `/etc/hosts` del runtime de Docker
 2. Solo se soporta un cluster GlusterFS por instancia
 3. Use `--alias` para definir instancias separadas si necesita diferentes configuraciones
+
+## Licencia
+
+Este proyecto está basado en el código original de [docker-volume-plugins/trajano](https://github.com/trajano/docker-volume-plugins?tab=EPL-2.0-1-ov-file) y está licenciado bajo la Eclipse Public License v2.0.
+
+```
+Copyright (c) 2024 [Jean Paul Carvajal Elizondo]
+
+This program and the accompanying materials are made available under the terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+```
+
+Para más información sobre la licencia, visite: https://www.eclipse.org/legal/epl-2.0/
